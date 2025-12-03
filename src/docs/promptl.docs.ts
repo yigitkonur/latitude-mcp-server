@@ -61,12 +61,13 @@ export const HELP_CONTENT = `# Latitude MCP Server
 
 Your AI-powered interface for managing prompts on Latitude.so.
 
-## Available Tools (18 total)
+## Available Tools (19 total)
 
 ### 📚 Documentation
 | Tool | Description |
 |------|-------------|
 | \`latitude_help\` | This help menu - start here! |
+| \`latitude_find_docs\` | Search docs by describing your goal |
 | \`latitude_get_docs\` | Get PromptL documentation by topic |
 
 ### 📁 Projects
