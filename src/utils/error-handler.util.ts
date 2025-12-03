@@ -75,7 +75,7 @@ export function buildErrorContext(
  * @param context Context information for better error detection
  * @returns Object containing the error code and status code
  */
-export function detectErrorType(
+function detectErrorType(
 	error: unknown,
 	context: ErrorContext = {},
 ): { code: ErrorCode; statusCode: number } {
@@ -171,7 +171,7 @@ export function detectErrorType(
  * @param originalMessage The original error message
  * @returns User-friendly error message
  */
-export function createUserFriendlyErrorMessage(
+function createUserFriendlyErrorMessage(
 	code: ErrorCode,
 	context: ErrorContext = {},
 	originalMessage?: string,

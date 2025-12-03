@@ -55,7 +55,7 @@ export function applyJqFilter(data: unknown, filter?: string): unknown {
  * @param pretty - Whether to pretty-print the JSON (default: true)
  * @returns JSON string
  */
-export function toJsonString(data: unknown, pretty: boolean = true): string {
+function toJsonString(data: unknown, pretty: boolean = true): string {
 	if (pretty) {
 		return JSON.stringify(data, null, 2);
 	}
