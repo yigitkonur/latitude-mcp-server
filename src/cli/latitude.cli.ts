@@ -48,7 +48,11 @@ function register(program: Command) {
 	projects
 		.command('list')
 		.description('List all projects in your workspace')
-		.option('-o, --output-format <format>', 'Output format: "toon" or "json"', 'toon')
+		.option(
+			'-o, --output-format <format>',
+			'Output format: "toon" or "json"',
+			'toon',
+		)
 		.action(async (options) => {
 			try {
 				const result = await latitudeController.listProjects({
@@ -63,7 +67,11 @@ function register(program: Command) {
 	projects
 		.command('create <name>')
 		.description('Create a new project')
-		.option('-o, --output-format <format>', 'Output format: "toon" or "json"', 'toon')
+		.option(
+			'-o, --output-format <format>',
+			'Output format: "toon" or "json"',
+			'toon',
+		)
 		.action(async (name, options) => {
 			try {
 				const result = await latitudeController.createProject({
@@ -84,7 +92,11 @@ function register(program: Command) {
 	versions
 		.command('list <projectId>')
 		.description('List all versions for a project')
-		.option('-o, --output-format <format>', 'Output format: "toon" or "json"', 'toon')
+		.option(
+			'-o, --output-format <format>',
+			'Output format: "toon" or "json"',
+			'toon',
+		)
 		.action(async (projectId, options) => {
 			try {
 				const result = await latitudeController.listVersions({
@@ -100,7 +112,11 @@ function register(program: Command) {
 	versions
 		.command('create <projectId> <name>')
 		.description('Create a new draft version')
-		.option('-o, --output-format <format>', 'Output format: "toon" or "json"', 'toon')
+		.option(
+			'-o, --output-format <format>',
+			'Output format: "toon" or "json"',
+			'toon',
+		)
 		.action(async (projectId, name, options) => {
 			try {
 				const result = await latitudeController.createVersion({
@@ -119,7 +135,11 @@ function register(program: Command) {
 		.description('Publish a draft version to make it live')
 		.option('-t, --title <title>', 'Publication title')
 		.option('-d, --description <description>', 'Publication description')
-		.option('-o, --output-format <format>', 'Output format: "toon" or "json"', 'toon')
+		.option(
+			'-o, --output-format <format>',
+			'Output format: "toon" or "json"',
+			'toon',
+		)
 		.action(async (projectId, versionUuid, options) => {
 			try {
 				const result = await latitudeController.publishVersion({
@@ -143,8 +163,16 @@ function register(program: Command) {
 	prompts
 		.command('list <projectId>')
 		.description('List all prompts in a version')
-		.option('-v, --version-uuid <versionUuid>', 'Version UUID (default: "live")', 'live')
-		.option('-o, --output-format <format>', 'Output format: "toon" or "json"', 'toon')
+		.option(
+			'-v, --version-uuid <versionUuid>',
+			'Version UUID (default: "live")',
+			'live',
+		)
+		.option(
+			'-o, --output-format <format>',
+			'Output format: "toon" or "json"',
+			'toon',
+		)
 		.action(async (projectId, options) => {
 			try {
 				const result = await latitudeController.listPrompts({
@@ -161,8 +189,16 @@ function register(program: Command) {
 	prompts
 		.command('get <projectId> <path>')
 		.description('Get a specific prompt by path')
-		.option('-v, --version-uuid <versionUuid>', 'Version UUID (default: "live")', 'live')
-		.option('-o, --output-format <format>', 'Output format: "toon" or "json"', 'toon')
+		.option(
+			'-v, --version-uuid <versionUuid>',
+			'Version UUID (default: "live")',
+			'live',
+		)
+		.option(
+			'-o, --output-format <format>',
+			'Output format: "toon" or "json"',
+			'toon',
+		)
 		.action(async (projectId, path, options) => {
 			try {
 				const result = await latitudeController.getPrompt({
@@ -184,61 +220,96 @@ function register(program: Command) {
 		.description(
 			'Push a prompt to a draft version. Use --file to read from a file, or --content for inline.',
 		)
-		.option('-i, --file <filePath>', 'Read prompt content from file (supports .md, .promptl)')
-		.option('-c, --content <content>', 'Prompt content in PromptL format (inline)')
+		.option(
+			'-i, --file <filePath>',
+			'Read prompt content from file (supports .md, .promptl)',
+		)
+		.option(
+			'-c, --content <content>',
+			'Prompt content in PromptL format (inline)',
+		)
 		.option('-f, --force', 'Force overwrite if exists', false)
-		.option('-o, --output-format <format>', 'Output format: "toon" or "json"', 'toon')
-		.action(async (projectId: string, versionUuid: string, promptPath: string | undefined, options: Record<string, unknown>) => {
-			try {
-				let content: string;
-				let finalPath: string;
+		.option(
+			'-o, --output-format <format>',
+			'Output format: "toon" or "json"',
+			'toon',
+		)
+		.action(
+			async (
+				projectId: string,
+				versionUuid: string,
+				promptPath: string | undefined,
+				options: Record<string, unknown>,
+			) => {
+				try {
+					let content: string;
+					let finalPath: string;
 
-				// Determine content source
-				if (options.file) {
-					// Read from file
-					const filePath = options.file as string;
-					content = readContentFromFile(filePath);
-					// Use provided promptPath or derive from filename
-					finalPath = promptPath || derivePromptPath(filePath);
-					console.log(`Reading from: ${resolve(filePath as string)}`);
-				} else if (options.content) {
-					// Use inline content
-					content = options.content as string;
-					if (!promptPath) {
-						console.error('Error: promptPath is required when using --content');
+					// Determine content source
+					if (options.file) {
+						// Read from file
+						const filePath = options.file as string;
+						content = readContentFromFile(filePath);
+						// Use provided promptPath or derive from filename
+						finalPath = promptPath || derivePromptPath(filePath);
+						console.log(
+							`Reading from: ${resolve(filePath as string)}`,
+						);
+					} else if (options.content) {
+						// Use inline content
+						content = options.content as string;
+						if (!promptPath) {
+							console.error(
+								'Error: promptPath is required when using --content',
+							);
+							process.exit(1);
+						}
+						finalPath = promptPath;
+					} else {
+						console.error(
+							'Error: Either --file or --content is required',
+						);
+						console.error(
+							'  Example with file:    latitude-mcp push proj123 draft456 --file ./my-prompt.md',
+						);
+						console.error(
+							'  Example with content: latitude-mcp push proj123 draft456 my-prompt --content "..."',
+						);
 						process.exit(1);
 					}
-					finalPath = promptPath;
-				} else {
-					console.error('Error: Either --file or --content is required');
-					console.error('  Example with file:    latitude-mcp push proj123 draft456 --file ./my-prompt.md');
-					console.error('  Example with content: latitude-mcp push proj123 draft456 my-prompt --content "..."');
-					process.exit(1);
-				}
 
-				const result = await latitudeController.pushPrompt({
-					projectId,
-					versionUuid,
-					path: finalPath,
-					content,
-					force: options.force as boolean,
-					outputFormat: options.outputFormat as 'toon' | 'json',
-				});
-				console.log(result.content);
-			} catch (error) {
-				handleCliError(error);
-			}
-		});
+					const result = await latitudeController.pushPrompt({
+						projectId,
+						versionUuid,
+						path: finalPath,
+						content,
+						force: options.force as boolean,
+						outputFormat: options.outputFormat as 'toon' | 'json',
+					});
+					console.log(result.content);
+				} catch (error) {
+					handleCliError(error);
+				}
+			},
+		);
 
 	// Run command (execute a prompt)
 	program
 		.command('run <projectId> <path>')
 		.description('Execute a prompt and get AI response')
-		.option('-v, --version-uuid <versionUuid>', 'Version UUID (default: "live")', 'live')
+		.option(
+			'-v, --version-uuid <versionUuid>',
+			'Version UUID (default: "live")',
+			'live',
+		)
 		.option('-p, --parameters <json>', 'Parameters as JSON object')
 		.option('-m, --message <message>', 'Additional user message')
 		.option('-s, --stream', 'Enable streaming response', false)
-		.option('-o, --output-format <format>', 'Output format: "toon" or "json"', 'toon')
+		.option(
+			'-o, --output-format <format>',
+			'Output format: "toon" or "json"',
+			'toon',
+		)
 		.action(async (projectId, path, options) => {
 			try {
 				let parameters: Record<string, unknown> | undefined;
@@ -272,7 +343,11 @@ function register(program: Command) {
 		.description('Continue a conversation')
 		.requiredOption('-m, --message <message>', 'User message to send')
 		.option('-s, --stream', 'Enable streaming response', false)
-		.option('-o, --output-format <format>', 'Output format: "toon" or "json"', 'toon')
+		.option(
+			'-o, --output-format <format>',
+			'Output format: "toon" or "json"',
+			'toon',
+		)
 		.action(async (conversationUuid, options) => {
 			try {
 				const result = await latitudeController.chat({

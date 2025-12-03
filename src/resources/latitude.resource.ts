@@ -29,7 +29,9 @@ function registerResources(server: McpServer) {
 		async (uri) => {
 			const methodLogger = logger.forMethod('projectsResource');
 			try {
-				methodLogger.debug('Projects resource called', { uri: uri.href });
+				methodLogger.debug('Projects resource called', {
+					uri: uri.href,
+				});
 
 				const result = await latitudeController.listProjects();
 
@@ -68,7 +70,9 @@ function registerResources(server: McpServer) {
 					projectId,
 				});
 
-				const result = await latitudeController.listVersions({ projectId });
+				const result = await latitudeController.listVersions({
+					projectId,
+				});
 
 				return {
 					contents: [
@@ -95,7 +99,8 @@ function registerResources(server: McpServer) {
 		),
 		{
 			title: 'Version Prompts',
-			description: 'List all prompts/documents in a Latitude project version',
+			description:
+				'List all prompts/documents in a Latitude project version',
 		},
 		async (uri, variables) => {
 			const methodLogger = logger.forMethod('promptsResource');
@@ -138,7 +143,8 @@ function registerResources(server: McpServer) {
 		),
 		{
 			title: 'Prompt Content',
-			description: 'Get a specific prompt by path from a Latitude project',
+			description:
+				'Get a specific prompt by path from a Latitude project',
 		},
 		async (uri, variables) => {
 			const methodLogger = logger.forMethod('promptResource');

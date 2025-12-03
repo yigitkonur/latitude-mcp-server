@@ -248,7 +248,9 @@ async function handleCreateProject(args: Record<string, unknown>) {
 	methodLogger.debug('Creating project', args);
 
 	try {
-		const result = await latitudeController.createProject(args as { name: string });
+		const result = await latitudeController.createProject(
+			args as { name: string },
+		);
 		return { content: [{ type: 'text' as const, text: result.content }] };
 	} catch (error) {
 		methodLogger.error('Error creating project', error);
@@ -429,13 +431,21 @@ async function handlePushChanges(args: Record<string, unknown>) {
 
 	try {
 		const projectId = resolveProjectId(args);
-		const rawChanges = args.changes as Array<{ path: string; content: string; status?: string }>;
+		const rawChanges = args.changes as Array<{
+			path: string;
+			content: string;
+			status?: string;
+		}>;
 		const changes = rawChanges.map((c) => ({
 			path: c.path,
 			content: c.content,
-			status: (c.status || 'modified') as 'added' | 'modified' | 'deleted' | 'unchanged',
+			status: (c.status || 'modified') as
+				| 'added'
+				| 'modified'
+				| 'deleted'
+				| 'unchanged',
 		}));
-		
+
 		const result = await latitudeController.pushChanges({
 			projectId,
 			versionUuid: args.versionUuid as string,
@@ -454,7 +464,11 @@ async function handleChat(args: Record<string, unknown>) {
 
 	try {
 		const result = await latitudeController.chat(
-			args as { conversationUuid: string; message: string; stream?: boolean },
+			args as {
+				conversationUuid: string;
+				message: string;
+				stream?: boolean;
+			},
 		);
 		return { content: [{ type: 'text' as const, text: result.content }] };
 	} catch (error) {

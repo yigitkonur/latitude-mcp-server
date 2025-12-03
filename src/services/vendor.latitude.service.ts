@@ -42,8 +42,7 @@ function getLatitudeCredentials(): { apiKey: string; baseUrl: string } {
 	);
 
 	const apiKey = config.get('LATITUDE_API_KEY');
-	const baseUrl =
-		config.get('LATITUDE_BASE_URL') || LATITUDE_BASE_URL;
+	const baseUrl = config.get('LATITUDE_BASE_URL') || LATITUDE_BASE_URL;
 
 	if (!apiKey) {
 		methodLogger.error('LATITUDE_API_KEY is not configured');
@@ -96,7 +95,10 @@ async function fetchLatitudeApi<T>(
 
 		if (!response.ok) {
 			const errorText = await response.text();
-			methodLogger.error(`API error response (${response.status}):`, errorText);
+			methodLogger.error(
+				`API error response (${response.status}):`,
+				errorText,
+			);
 
 			// Try to parse as Latitude error format
 			let errorData: LatitudeError | undefined;
@@ -109,11 +111,13 @@ async function fetchLatitudeApi<T>(
 
 			if (response.status === 401) {
 				throw createAuthInvalidError(
-					errorData?.message || 'Authentication failed. Check your LATITUDE_API_KEY.',
+					errorData?.message ||
+						'Authentication failed. Check your LATITUDE_API_KEY.',
 				);
 			} else if (response.status === 403) {
 				throw createAuthInvalidError(
-					errorData?.message || 'Permission denied for the requested resource.',
+					errorData?.message ||
+						'Permission denied for the requested resource.',
 				);
 			} else if (response.status === 404) {
 				throw createApiError(
@@ -278,7 +282,9 @@ async function getVersion(
 		'services/vendor.latitude.service.ts',
 		'getVersion',
 	);
-	methodLogger.debug(`Getting version: ${versionUuid} for project: ${projectId}`);
+	methodLogger.debug(
+		`Getting version: ${versionUuid} for project: ${projectId}`,
+	);
 
 	const data = await fetchLatitudeApi<unknown>(
 		`/projects/${projectId}/versions/${versionUuid}`,
@@ -336,7 +342,9 @@ async function pushChanges(
 		'services/vendor.latitude.service.ts',
 		'pushChanges',
 	);
-	methodLogger.debug(`Pushing ${changes.changes.length} changes to version: ${versionUuid}`);
+	methodLogger.debug(
+		`Pushing ${changes.changes.length} changes to version: ${versionUuid}`,
+	);
 
 	return fetchLatitudeApi<unknown>(
 		`/projects/${projectId}/versions/${versionUuid}/push`,
@@ -359,7 +367,9 @@ async function listDocuments(
 		'services/vendor.latitude.service.ts',
 		'listDocuments',
 	);
-	methodLogger.debug(`Listing documents for project: ${projectId}, version: ${versionUuid}`);
+	methodLogger.debug(
+		`Listing documents for project: ${projectId}, version: ${versionUuid}`,
+	);
 
 	const data = await fetchLatitudeApi<unknown>(
 		`/projects/${projectId}/versions/${versionUuid}/documents`,
@@ -467,7 +477,9 @@ async function createDocumentLog(
 // Conversations API
 // ============================================================================
 
-async function getConversation(conversationUuid: string): Promise<Conversation> {
+async function getConversation(
+	conversationUuid: string,
+): Promise<Conversation> {
 	const methodLogger = Logger.forContext(
 		'services/vendor.latitude.service.ts',
 		'getConversation',
@@ -492,16 +504,19 @@ async function chatConversation(
 	methodLogger.debug(`Chatting in conversation: ${conversationUuid}`);
 
 	if (stream) {
-		return fetchLatitudeStream(
-			`/conversations/${conversationUuid}/chat`,
-			{ messages, stream: true },
-		);
+		return fetchLatitudeStream(`/conversations/${conversationUuid}/chat`, {
+			messages,
+			stream: true,
+		});
 	}
 
-	return fetchLatitudeApi<unknown>(`/conversations/${conversationUuid}/chat`, {
-		method: 'POST',
-		body: { messages, stream: false },
-	});
+	return fetchLatitudeApi<unknown>(
+		`/conversations/${conversationUuid}/chat`,
+		{
+			method: 'POST',
+			body: { messages, stream: false },
+		},
+	);
 }
 
 async function stopConversation(conversationUuid: string): Promise<unknown> {
@@ -511,9 +526,12 @@ async function stopConversation(conversationUuid: string): Promise<unknown> {
 	);
 	methodLogger.debug(`Stopping conversation: ${conversationUuid}`);
 
-	return fetchLatitudeApi<unknown>(`/conversations/${conversationUuid}/stop`, {
-		method: 'POST',
-	});
+	return fetchLatitudeApi<unknown>(
+		`/conversations/${conversationUuid}/stop`,
+		{
+			method: 'POST',
+		},
+	);
 }
 
 // ============================================================================

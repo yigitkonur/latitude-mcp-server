@@ -18,8 +18,9 @@
 </p>
 
 <p align="center">
-  <img alt="tools" src="https://img.shields.io/badge/🛠️_18_MCP_tools-full_CRUD_+_docs-2ED573.svg?style=for-the-badge">
+  <img alt="tools" src="https://img.shields.io/badge/🛠️_19_MCP_tools-full_CRUD_+_docs-2ED573.svg?style=for-the-badge">
   <img alt="resources" src="https://img.shields.io/badge/📚_6_resources-read_only_access-2ED573.svg?style=for-the-badge">
+  <img alt="docs" src="https://img.shields.io/badge/📖_38_doc_topics-self_learning-4D87E6.svg?style=for-the-badge">
 </p>
 
 <div align="center">
@@ -217,7 +218,7 @@ Add to `.cursor/mcp.json` or MCP settings:
 
 ## 🛠️ Tool Reference
 
-This server provides **18 MCP tools** covering the complete Latitude API plus built-in documentation.
+This server provides **19 MCP tools** covering the complete Latitude API plus built-in documentation with **38 topics**.
 
 <div align="center">
 <table>
@@ -258,7 +259,8 @@ This server provides **18 MCP tools** covering the complete Latitude API plus bu
 </td>
 <td valign="top">
 <code>help</code><br/>
-<code>get_docs</code>
+<code>get_docs</code><br/>
+<code>find_docs</code>
 </td>
 </tr>
 </table>
@@ -268,20 +270,41 @@ This server provides **18 MCP tools** covering the complete Latitude API plus bu
 
 ### 📚 Documentation Tools (AI Self-Learning)
 
-The server includes **self-documenting capabilities** so AI agents can learn PromptL syntax on-demand without external lookups.
+The server includes **38 documentation topics** organized by category, enabling AI agents to learn PromptL syntax on-demand. Topics include enhanced metadata (`useWhen` triggers, `difficulty`, `prerequisites`) for intelligent discovery.
 
 #### `latitude_help`
 
 Get complete server overview — all tools, documentation topics, and quick start workflow.
 
 ```json
-// No parameters required
 {}
 ```
 
-**Returns:** Server overview with tool list, doc topics, and suggested next actions.
+**Returns:** Server overview with 19 tools, 38 doc topics by category, and suggested next actions.
 
-**AI agents should call this first** to understand available capabilities.
+---
+
+#### `latitude_find_docs` ⭐ NEW
+
+**Semantic search for documentation.** Describe what you're trying to do, get matched topics. Uses `useWhen` triggers from topic metadata for intelligent matching.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `query` | `string` | Yes | What are you trying to do? |
+| `maxResults` | `number` | No | Max topics to return (default: 5) |
+
+```json
+{
+  "query": "extract structured data from text"
+}
+```
+
+**How it works:** Scores topics based on:
+- Title/description match
+- `useWhen` trigger phrases (e.g., "json output", "extract", "chatbot")
+- Topic name relevance
+
+**Returns:** Ranked topics with relevance scores and `getDocsCommand` for each.
 
 ---
 
@@ -291,30 +314,27 @@ Get comprehensive PromptL documentation for a specific topic.
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `topic` | `enum` | Yes | Documentation topic (see below) |
+| `topic` | `enum` | Yes | One of 38 topics (see below) |
 
-**Available Topics:**
+**Available Topics (38 total):**
 
-| Topic | What You'll Learn |
-|-------|------------------|
-| `overview` | What is PromptL, getting started |
-| `structure` | Config section (YAML) + Messages (system, user, assistant) |
-| `variables` | `{{ }}` syntax, expressions, defaults, assignments |
-| `conditionals` | `if/else/endif` logic for dynamic content |
-| `loops` | `for/each` iteration for few-shot examples |
-| `references` | Include other prompts with `<prompt>` tag |
-| `tools` | Function calling with JSON Schema parameters |
-| `chains` | Multi-step prompts with `<step>` tags |
-| `agents` | Multi-agent orchestration and collaboration |
-| `techniques` | Few-shot, Chain-of-Thought, Tree-of-Thoughts, Role prompting |
+| Category | Topics |
+|----------|--------|
+| **Core Syntax** (11) | `overview`, `structure`, `variables`, `conditionals`, `loops`, `references`, `tools`, `chains`, `agents`, `techniques`, `agent-patterns` |
+| **Configuration** (7) | `config-basics`, `config-generation`, `config-json-output`, `config-advanced`, `providers-openai`, `providers-anthropic`, `providers-google` |
+| **Messages** (2) | `messages-roles`, `messages-multimodal` |
+| **Tools** (4) | `tools-builtin`, `tools-custom`, `tools-schema` |
+| **Techniques** (4) | `technique-role`, `technique-few-shot`, `technique-cot`, `technique-tot` |
+| **Recipes** (5) | `recipe-classification`, `recipe-extraction`, `recipe-generation`, `recipe-chatbot`, `recipe-rag` |
+| **Guides** (6) | `conversation-history`, `guide-debugging`, `guide-safety`, `guide-performance`, `guide-testing`, `guide-versioning` |
 
 ```json
 {
-  "topic": "variables"
+  "topic": "recipe-rag"
 }
 ```
 
-**Returns:** Comprehensive documentation with syntax, examples, best practices, and next steps.
+**Returns:** Comprehensive documentation with syntax, examples, best practices, related topics, and suggested tools.
 
 ---
 
@@ -323,34 +343,34 @@ Get comprehensive PromptL documentation for a specific topic.
 AI agents can use these tools to write valid PromptL prompts:
 
 ```
-1. latitude_help                           → Understand server capabilities
-2. latitude_get_docs({ topic: "structure" }) → Learn basic prompt structure
-3. latitude_get_docs({ topic: "variables" }) → Learn {{ }} syntax
-4. latitude_push_prompt                     → Push your prompt
-5. latitude_run_prompt                      → Test execution
+1. latitude_find_docs({ query: "build a chatbot" })  → Discover relevant topics
+2. latitude_get_docs({ topic: "recipe-chatbot" })    → Learn chatbot patterns
+3. latitude_get_docs({ topic: "conversation-history" }) → Learn context management
+4. latitude_push_prompt                              → Push your prompt
+5. latitude_run_prompt                               → Test execution
 ```
 
-**Example learning flow for writing a prompt with conditionals:**
+**Example: AI discovers how to extract structured data:**
 
 ```
-AI: latitude_get_docs({ topic: "structure" })
-   → Learns: Config section (---), message tags (<user>, <assistant>)
+AI: latitude_find_docs({ query: "extract JSON from text" })
+   → Returns: config-json-output (score: 24), recipe-extraction (score: 18)
 
-AI: latitude_get_docs({ topic: "conditionals" })
-   → Learns: {{ if }}, {{ else }}, {{ endif }} syntax
+AI: latitude_get_docs({ topic: "config-json-output" })
+   → Learns: schema config, JSON Schema types, constraints
 
 AI: Now writes valid PromptL:
    ---
    provider: OpenAI
    model: gpt-4o
+   schema:
+     type: object
+     properties:
+       name: { type: string }
+       email: { type: string }
+     required: [name, email]
    ---
-   {{ if user.isPremium }}
-     You have access to all features!
-   {{ else }}
-     Upgrade for premium features.
-   {{ endif }}
-   
-   <user>{{ question }}</user>
+   Extract contact info from: {{ text }}
 ```
 
 ---

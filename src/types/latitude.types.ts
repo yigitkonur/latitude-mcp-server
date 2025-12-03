@@ -102,7 +102,12 @@ export type DocumentList = z.infer<typeof DocumentListSchema>;
 // Document Change Types (for Push)
 // ============================================================================
 
-export const ChangeStatusEnum = z.enum(['added', 'modified', 'deleted', 'unchanged']);
+export const ChangeStatusEnum = z.enum([
+	'added',
+	'modified',
+	'deleted',
+	'unchanged',
+]);
 
 export const DocumentChangeSchema = z.object({
 	path: z.string(),
@@ -356,7 +361,10 @@ export function getListPromptsInputSchema() {
 export function getGetPromptInputSchema() {
 	return z.object({
 		projectId: projectIdField(),
-		versionUuid: z.string().default('live').describe("Version UUID or 'live'"),
+		versionUuid: z
+			.string()
+			.default('live')
+			.describe("Version UUID or 'live'"),
 		path: z
 			.string()
 			.describe("Prompt path (e.g., '/my-prompt' or 'folder/prompt')"),
@@ -383,7 +391,9 @@ export function getPushPromptFromFileInputSchema() {
 			.describe("Target version UUID (must be draft, not 'live')"),
 		filePath: z
 			.string()
-			.describe('Absolute path to the prompt file (e.g., /path/to/my-prompt.md)'),
+			.describe(
+				'Absolute path to the prompt file (e.g., /path/to/my-prompt.md)',
+			),
 		promptPath: z
 			.string()
 			.optional()
@@ -397,13 +407,19 @@ export function getPushPromptFromFileInputSchema() {
 export function getRunPromptInputSchema() {
 	return z.object({
 		projectId: projectIdField(),
-		versionUuid: z.string().default('live').describe("Version UUID or 'live'"),
+		versionUuid: z
+			.string()
+			.default('live')
+			.describe("Version UUID or 'live'"),
 		path: z.string().describe('Prompt path to run'),
 		parameters: z
 			.record(z.string(), z.unknown())
 			.optional()
 			.describe('Prompt parameters as key-value pairs'),
-		stream: z.boolean().default(false).describe('Enable streaming response'),
+		stream: z
+			.boolean()
+			.default(false)
+			.describe('Enable streaming response'),
 		tools: z.array(z.string()).optional().describe('Tool names to enable'),
 		userMessage: z.string().optional().describe('Additional user message'),
 	});

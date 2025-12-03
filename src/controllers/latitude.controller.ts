@@ -2,7 +2,10 @@ import { readFileSync, existsSync } from 'fs';
 import { resolve, basename, extname } from 'path';
 import { Logger } from '../utils/logger.util.js';
 import latitudeService from '../services/vendor.latitude.service.js';
-import { handleControllerError, buildErrorContext } from '../utils/error-handler.util.js';
+import {
+	handleControllerError,
+	buildErrorContext,
+} from '../utils/error-handler.util.js';
 import { applyJqFilter, toOutputString } from '../utils/jq.util.js';
 import { DocumentChange } from '../types/latitude.types.js';
 
@@ -397,7 +400,9 @@ async function pushPromptFromFile(
 	// Derive prompt path from filename if not provided
 	const promptPath = args.promptPath || derivePromptPath(args.filePath);
 
-	methodLogger.debug(`Pushing prompt from file: ${absolutePath} → ${promptPath}`);
+	methodLogger.debug(
+		`Pushing prompt from file: ${absolutePath} → ${promptPath}`,
+	);
 
 	try {
 		const document = await latitudeService.createOrUpdateDocument(
@@ -464,7 +469,12 @@ async function runPrompt(
 		);
 
 		// Handle streaming response
-		if (args.stream && result && typeof result === 'object' && Symbol.asyncIterator in result) {
+		if (
+			args.stream &&
+			result &&
+			typeof result === 'object' &&
+			Symbol.asyncIterator in result
+		) {
 			const chunks: string[] = [];
 			for await (const chunk of result as AsyncIterable<string>) {
 				chunks.push(chunk);
@@ -577,7 +587,12 @@ async function chat(
 		);
 
 		// Handle streaming response
-		if (args.stream && result && typeof result === 'object' && Symbol.asyncIterator in result) {
+		if (
+			args.stream &&
+			result &&
+			typeof result === 'object' &&
+			Symbol.asyncIterator in result
+		) {
 			const chunks: string[] = [];
 			for await (const chunk of result as AsyncIterable<string>) {
 				chunks.push(chunk);
@@ -610,7 +625,9 @@ async function stopConversation(
 	methodLogger.debug(`Stopping conversation: ${args.conversationUuid}`);
 
 	try {
-		const result = await latitudeService.stopConversation(args.conversationUuid);
+		const result = await latitudeService.stopConversation(
+			args.conversationUuid,
+		);
 		return formatOutput(result, args);
 	} catch (error) {
 		throw handleControllerError(

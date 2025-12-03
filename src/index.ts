@@ -55,7 +55,9 @@ export async function startServer(
 	latitudeResources.registerResources(serverInstance);
 	docsTools.registerTools(serverInstance);
 	docsResources.registerResources(serverInstance);
-	serverLogger.debug('All tools and resources registered (18 tools, 6 resources)');
+	serverLogger.debug(
+		'All tools and resources registered (18 tools, 6 resources)',
+	);
 
 	if (mode === 'stdio') {
 		serverLogger.info('Using STDIO transport');

@@ -18,6 +18,40 @@
  */
 
 import type { DocsTopic } from '../types/docs.types.js';
+import {
+	DOCS_CONFIG_JSON_OUTPUT,
+	DOCS_CONFIG_GENERATION,
+	DOCS_TOOLS_BUILTIN,
+	DOCS_TECHNIQUE_ROLE,
+	DOCS_RECIPE_CLASSIFICATION,
+	DOCS_RECIPE_EXTRACTION,
+	DOCS_CONVERSATION_HISTORY,
+	DOCS_GUIDE_DEBUGGING,
+} from './phase1.docs.js';
+import {
+	DOCS_CONFIG_BASICS,
+	DOCS_CONFIG_ADVANCED,
+	DOCS_MESSAGES_ROLES,
+	DOCS_MESSAGES_MULTIMODAL,
+	DOCS_TOOLS_CUSTOM,
+	DOCS_TOOLS_SCHEMA,
+	DOCS_TECHNIQUE_FEW_SHOT,
+	DOCS_TECHNIQUE_COT,
+	DOCS_TECHNIQUE_TOT,
+	DOCS_RECIPE_GENERATION,
+	DOCS_RECIPE_CHATBOT,
+	DOCS_GUIDE_SAFETY,
+	DOCS_GUIDE_PERFORMANCE,
+} from './phase2.docs.js';
+import {
+	DOCS_RECIPE_RAG,
+	DOCS_AGENT_PATTERNS,
+	DOCS_GUIDE_TESTING,
+	DOCS_GUIDE_VERSIONING,
+	DOCS_PROVIDERS_OPENAI,
+	DOCS_PROVIDERS_ANTHROPIC,
+	DOCS_PROVIDERS_GOOGLE,
+} from './phase3.docs.js';
 
 // ============================================================================
 // HELP CONTENT - Server Overview
@@ -69,22 +103,75 @@ Your AI-powered interface for managing prompts on Latitude.so.
 
 ---
 
-## 📖 Documentation Topics
+## 📖 Documentation Topics (38 total)
 
 Call \`latitude_get_docs\` with one of these topics:
 
+### Core Syntax (11)
 | Topic | What You'll Learn |
 |-------|------------------|
 | \`overview\` | What is PromptL, getting started |
 | \`structure\` | Config section + message types |
-| \`variables\` | \`{{ }}\` syntax, expressions, defaults |
+| \`variables\` | \`{{ }}\` syntax, expressions |
 | \`conditionals\` | \`if/else/endif\` logic |
 | \`loops\` | \`for/each\` iteration |
 | \`references\` | Include prompts with \`<prompt>\` |
-| \`tools\` | Function calling with JSON Schema |
-| \`chains\` | Multi-step with \`<step>\` tags |
+| \`tools\` | Function calling basics |
+| \`chains\` | Multi-step with \`<step>\` |
 | \`agents\` | Multi-agent orchestration |
-| \`techniques\` | Few-shot, CoT, ToT, Role prompting |
+| \`techniques\` | Prompting techniques overview |
+| \`agent-patterns\` | Agent collaboration patterns |
+
+### Configuration (7)
+| Topic | What You'll Learn |
+|-------|------------------|
+| \`config-basics\` | Provider, model essentials |
+| \`config-generation\` | temperature, maxTokens |
+| \`config-json-output\` | Structured JSON output |
+| \`config-advanced\` | maxSteps, retries, seed |
+| \`providers-openai\` | GPT-4, GPT-3.5 specifics |
+| \`providers-anthropic\` | Claude specifics |
+| \`providers-google\` | Gemini specifics |
+
+### Messages (2)
+| Topic | What You'll Learn |
+|-------|------------------|
+| \`messages-roles\` | System, user, assistant, tool |
+| \`messages-multimodal\` | Images, files, rich content |
+
+### Tools (4)
+| Topic | What You'll Learn |
+|-------|------------------|
+| \`tools-builtin\` | latitude/search, /code, /extract |
+| \`tools-custom\` | Define custom tools |
+| \`tools-schema\` | JSON Schema deep dive |
+
+### Techniques (4)
+| Topic | What You'll Learn |
+|-------|------------------|
+| \`technique-role\` | Expert roles, personas |
+| \`technique-few-shot\` | Examples for learning |
+| \`technique-cot\` | Chain-of-Thought reasoning |
+| \`technique-tot\` | Tree-of-Thoughts branching |
+
+### Recipes (5)
+| Topic | What You'll Learn |
+|-------|------------------|
+| \`recipe-classification\` | Sentiment, intent |
+| \`recipe-extraction\` | Entity extraction |
+| \`recipe-generation\` | Content creation |
+| \`recipe-chatbot\` | Conversational AI |
+| \`recipe-rag\` | Retrieval Augmented Generation |
+
+### Guides (6)
+| Topic | What You'll Learn |
+|-------|------------------|
+| \`conversation-history\` | Multi-turn context |
+| \`guide-debugging\` | Common errors, fixes |
+| \`guide-safety\` | Guardrails, filtering |
+| \`guide-performance\` | Token optimization |
+| \`guide-testing\` | Testing strategies |
+| \`guide-versioning\` | Draft vs live workflow |
 
 ---
 
@@ -2109,6 +2196,7 @@ Provide executive summary with recommendations.
 // ============================================================================
 
 export const DOCS_MAP: Record<DocsTopic, string> = {
+	// Core syntax (original)
 	overview: DOCS_OVERVIEW,
 	structure: DOCS_STRUCTURE,
 	variables: DOCS_VARIABLES,
@@ -2119,5 +2207,35 @@ export const DOCS_MAP: Record<DocsTopic, string> = {
 	chains: DOCS_CHAINS,
 	agents: DOCS_AGENTS,
 	techniques: DOCS_TECHNIQUES,
+	// Phase 1 - Tier 1 topics
+	'config-json-output': DOCS_CONFIG_JSON_OUTPUT,
+	'config-generation': DOCS_CONFIG_GENERATION,
+	'tools-builtin': DOCS_TOOLS_BUILTIN,
+	'technique-role': DOCS_TECHNIQUE_ROLE,
+	'recipe-classification': DOCS_RECIPE_CLASSIFICATION,
+	'recipe-extraction': DOCS_RECIPE_EXTRACTION,
+	'conversation-history': DOCS_CONVERSATION_HISTORY,
+	'guide-debugging': DOCS_GUIDE_DEBUGGING,
+	// Phase 2 - Tier 2 topics
+	'config-basics': DOCS_CONFIG_BASICS,
+	'config-advanced': DOCS_CONFIG_ADVANCED,
+	'messages-roles': DOCS_MESSAGES_ROLES,
+	'messages-multimodal': DOCS_MESSAGES_MULTIMODAL,
+	'tools-custom': DOCS_TOOLS_CUSTOM,
+	'tools-schema': DOCS_TOOLS_SCHEMA,
+	'technique-few-shot': DOCS_TECHNIQUE_FEW_SHOT,
+	'technique-cot': DOCS_TECHNIQUE_COT,
+	'technique-tot': DOCS_TECHNIQUE_TOT,
+	'recipe-generation': DOCS_RECIPE_GENERATION,
+	'recipe-chatbot': DOCS_RECIPE_CHATBOT,
+	'guide-safety': DOCS_GUIDE_SAFETY,
+	'guide-performance': DOCS_GUIDE_PERFORMANCE,
+	// Phase 3 - Tier 3 topics
+	'recipe-rag': DOCS_RECIPE_RAG,
+	'agent-patterns': DOCS_AGENT_PATTERNS,
+	'guide-testing': DOCS_GUIDE_TESTING,
+	'guide-versioning': DOCS_GUIDE_VERSIONING,
+	'providers-openai': DOCS_PROVIDERS_OPENAI,
+	'providers-anthropic': DOCS_PROVIDERS_ANTHROPIC,
+	'providers-google': DOCS_PROVIDERS_GOOGLE,
 };
-
