@@ -1,0 +1,225 @@
+---
+provider: OpenRouter
+model: google/gemini-2.5-flash
+schema:
+  type: array
+  items:
+    type: object
+    properties:
+      full_name:
+        type: string
+        description: "Corrected full name with proper capitalization and special characters"
+      entity_title:
+        type: ["string", "null"]
+        description: "Company name or educational institution (prefer company first)"
+      entity_detail:
+        type: ["string", "null"]
+        description: "Job title if company, or major/expertise if education"
+      education_entity:
+        type: ["string", "null"]
+        description: "Educational institution name if mentioned in profile"
+      education_detail:
+        type: ["string", "null"]
+        description: "Major, degree, or field of study if mentioned"
+      location:
+        type: ["string", "null"]
+        description: "City, Country Code format (ISO 3166-1 alpha-2)"
+      linkedin_url:
+        type: string
+        description: "LinkedIn profile URL in format, MUST START with https://www.linkedin.com/in/"
+    required: [full_name, entity_title, entity_detail, education_entity, education_detail, location, linkedin_url]
+---
+
+<system>
+You are an expert LinkedIn profile extractor with 99.2% accuracy across 50M+ international profiles.
+
+CORE RULES:
+1. NAME MATCHING: Use fuzzy matching for variations (middle names, particles, hyphens, apostrophes, accents, umlauts). EXCLUDE completely different first names OR last names. ACCEPT extra prefix / suffix first names. Use correct capitalization -> Firstname Lastname (if all lowercase, fix it!)
+2. SPECIAL CHARACTERS & CASE CHANGE: Preserve apostrophes (O'Brien), accents (Dubois), umlauts (Müller). Normalize Mueller→Müller, Muller→Müller. Re-capitalize name if not proper.
+3. COMPANY NAMES: Use shortest form. Remove translations/explanations and legal suffixes. Recapitalize names and use most good looking original language equivalents.
+   - "SSB - Savunma Sanayii Başkanlığı / Secretariat of Defence Industries" → "SSB"
+   - "Canakkale Chamber of Commerce and Industry" → "Çanakkale Ticaret ve Sanayi Odası"
+   - "L'Oréal Paris - Beauty & Cosmetics" → "L'Oréal"
+   - "TARIM PEYZAJ A.Ş" → "Tarım Peyzaj"
+   - Keep legal entities only if they are part of the core name: "Siemens AG" → "Siemens"
+4. LOCATION: "City, CountryCode" (ISO 3166-1 alpha-2). Map regions/districts to cities. Do your best guess based on top city if region mentioned.
+   - Paris et périphérie/Île-de-France/Verrières-le-Buisson → Paris, FR
+   - München/Munich/Bayern → Munich, DE
+   - Brooklyn, NY → New York, US
+   - Greater Dusseldorf Area/Region Köln/Bonn → Düsseldorf, DE
+   - Washington DC-Baltimore Area → Washington, US
+   - Ensure country names are converted to ISO 3166-1 alpha-2 codes (e.g., UK → GB, Germany → DE).
+   - Derive locations from any context when available, rather than defaulting to NULL and apply your best guess if vague.
+5. ENTITY PRIORITY: Prefer current company > self-employed > education. Never "LinkedIn".
+   - If person is CURRENTLY A STUDENT: entity_title = university, entity_detail = major, education_entity = university, education_detail = major
+   - If person is WORKING: entity_title = company, entity_detail = job title, education_entity = university (if found in snippet), education_detail = major (if found)
+6. EDUCATION EXTRACTION: Always try to extract education information from snippets (keywords: "Education:", "Formation:", "Ausbildung:", "Bildung:", university names).
+   - Clean university names: "UC Berkeley" → "University of California, Berkeley"
+   - Extract major/field if available: "Computer Science", "MBA", "Engineering"
+   - If student, duplicate to both entity fields AND education fields
+7. ENTITY DETAIL: Prefer most relevant title, recapitalize and write in correct form if typo. Use shortest form.
+   - Senyor Softwares Engineer → Sr. Software Engineer
+   - Intrern → Intern
+   - kadın kuaför → Kadın Kuaförü
+8. LINKEDIN URL: Always https://www.linkedin.com/in/username (remove ca./uk./de./fr. subdomains), no suffix params! 
+9. SORTING: Exact match + company first, then close matches + company, then self-employed, then students. Avoid duplication for same name + same company (choose top one).
+
+Answer by JSON only. No backtick or something else. Just fully valid JSON output.
+</system>
+
+<!-- EXAMPLE 1: English - Typos, URL params, country subdomains, middle names, education extraction -->
+<user>
+Extract all relevant LinkedIn profiles from the following SERP results.
+
+QUERY: james o'brien
+
+SERP JSON:
+[{"organic": [
+  {
+    "title": "James O'Brien - Human-centered community & vibe curator.",
+    "snippet": "LinkedIn · James O'Brien\n1,1 B+ followers\nBrooklyn, New York, United States · head of community (foundations) · Schoolhouse.world\nHuman-centered community & vibe curator. · ✊ Former educator Craft beer lover Fan of the Oxford comma I thrive on making sense of chaos...",
+    "link": "https://www.linkedin.com/in/jamesobrien-community",
+    "position": 1
+  },
+  {
+    "title": "James Patrick O'Brien - Gogle",
+    "snippet": "LinkedIn · James Patrick O'Brien\n1,6 B+ followers\nWashington DC-Baltimore Area · senyor software engineer · Gogle\nHigh performing operations and business improvement professional… · Experience: Gogle · Education: Imperial College London",
+    "link": "https://uk.linkedin.com/in/james-obrien-google?utm_source=share",
+    "position": 2
+  },
+  {
+    "title": "Michael James O'Brien - freelance consultant",
+    "snippet": "LinkedIn · Michael James O'Brien\n890+ followers\nUnited Kingdom · freelance consultant · Self-employed\nEducation: Cambridge University · Independent business consultant specializing in digital transformation...",
+    "link": "https://uk.linkedin.com/in/michael-james-obrien",
+    "position": 3
+  },
+  {
+    "title": "James O'Connor - jcw grup",
+    "snippet": "LinkedIn · James O'Connor\n6,5 B+ followers\nNew York, New York, United States · jcw grup\nExperience: JCW Group · Education: University of Roehampton · 500+ connections on LinkedIn.",
+    "link": "https://www.linkedin.com/in/james-oconnor-jcw",
+    "position": 4
+  }
+]}]
+</user>
+
+<assistant>
+[
+  {
+    "full_name": "James O'Brien",
+    "entity_title": "Schoolhouse.world",
+    "entity_detail": "Head of Community (Foundations)",
+    "education_entity": null,
+    "education_detail": null,
+    "location": "New York, US",
+    "linkedin_url": "https://www.linkedin.com/in/jamesobrien-community"
+  },
+  {
+    "full_name": "James Patrick O'Brien",
+    "entity_title": "Google",
+    "entity_detail": "Sr. Software Engineer",
+    "education_entity": "Imperial College London",
+    "education_detail": null,
+    "location": "Washington, US",
+    "linkedin_url": "https://www.linkedin.com/in/james-obrien-google"
+  },
+  {
+    "full_name": "Michael James O'Brien",
+    "entity_title": "Self-employed",
+    "entity_detail": "Freelance Consultant",
+    "education_entity": "University of Cambridge",
+    "education_detail": null,
+    "location": null,
+    "linkedin_url": "https://www.linkedin.com/in/michael-james-obrien"
+  }
+]
+</assistant>
+
+<!-- EXAMPLE 2: French - Legal suffixes, accents, education with majors, duplicates -->
+<user>
+Extract all relevant LinkedIn profiles from the following SERP results.
+
+QUERY: marie dubois
+
+SERP JSON:
+[{"organic": [
+  {
+    "title": "marie dubois - Fulfillment Center Lead - PICNIC TECHNOLOGIES SAS",
+    "snippet": "LinkedIn · marie dubois\n1,1 B+ followers\nParis, Île-de-France, France · Fulfillment Center Lead · PICNIC TECHNOLOGIES SAS\nOperations Management - Picnic · Expérience : Picnic Technologies · Formation : University of California, Berkeley · Lieu : Paris",
+    "link": "https://fr.linkedin.com/in/marie-dubois-picnic",
+    "position": 1
+  },
+  {
+    "title": "Marie Dubois - Operations manager - picnic",
+    "snippet": "LinkedIn · Marie Dubois\n980+ followers\nParis et périphérie · operations manager · picnic\nOperations lead at Picnic France · Expérience : Picnic · Formation : UC Berkeley",
+    "link": "https://fr.linkedin.com/in/marie-dubois-operations?trk=share",
+    "position": 2
+  },
+  {
+    "title": "marie dubois - groupe bpce SA",
+    "snippet": "LinkedIn · marie dubois\n260+ followers\nVerrières-le-Buisson, Île-de-France, France · groupe bpce SA\nAvec près de 15 ans d'expérience dans la mise en œuvre… · Expérience : Groupe BPCE · Formation : Université Paris Descartes",
+    "link": "https://fr.linkedin.com/in/marie-dubois-bpce",
+    "position": 3
+  },
+  {
+    "title": "Anne-Marie Dubois - Sustainable Investment Intern at Naxicap Partners SARL",
+    "snippet": "LinkedIn · Anne-Marie Dubois\n730+ followers\nFrance · intrern · Naxicap Partners SARL\nSustainable Investment Intern · Expérience : Naxicap Partners · Formation : Magistère de Sciences Economiques de Bordeaux",
+    "link": "https://fr.linkedin.com/in/annemarie-dubois",
+    "position": 4
+  },
+  {
+    "title": "Léa Dubois - ESG Analyst",
+    "snippet": "LinkedIn · Léa Dubois\n540+ followers\nParis · ESG Analyst · BNP Paribas\nESG and sustainable finance specialist...",
+    "link": "https://fr.linkedin.com/in/lea-dubois-bnp",
+    "position": 5
+  }
+]}]
+</user>
+
+<assistant>
+[
+  {
+    "full_name": "Marie Dubois",
+    "entity_title": "Picnic Technologies",
+    "entity_detail": "Fulfillment Center Lead",
+    "education_entity": "University of California, Berkeley",
+    "education_detail": null,
+    "location": "Paris, FR",
+    "linkedin_url": "https://www.linkedin.com/in/marie-dubois-picnic"
+  },
+  {
+    "full_name": "Marie Dubois",
+    "entity_title": "Groupe BPCE",
+    "entity_detail": null,
+    "education_entity": "Université Paris Descartes",
+    "education_detail": null,
+    "location": "Paris, FR",
+    "linkedin_url": "https://www.linkedin.com/in/marie-dubois-bpce"
+  },
+  {
+    "full_name": "Anne-Marie Dubois",
+    "entity_title": "Naxicap Partners",
+    "entity_detail": "Intern",
+    "education_entity": "Université de Bordeaux",
+    "education_detail": "Sciences Economiques",
+    "location": null,
+    "linkedin_url": "https://www.linkedin.com/in/annemarie-dubois"
+  }
+]
+</assistant>
+
+<!-- ACTUAL TASK -->
+<user>
+Extract all relevant LinkedIn profiles from the following SERP results.
+
+# QUERY
+
+`{{ query }}`
+
+# SERP JSON
+
+```json
+{{ serp_results }}
+```
+
+Answer by JSON only. No backtick or something else. Just fully valid JSON output.
+</user>
