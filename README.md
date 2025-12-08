@@ -1,25 +1,47 @@
-# Latitude MCP Server v2
+# Latitude MCP Server
 
-> Simplified MCP server for Latitude.so prompt management
+> Model Context Protocol server for [Latitude.so](https://latitude.so) prompt management
 
-[![npm](https://img.shields.io/npm/v/latitude-mcp-server.svg)](https://www.npmjs.com/package/latitude-mcp-server)
+Manage AI prompts directly from your MCP-compatible AI assistant. Push, pull, run, and version PromptL prompts with 8 focused tools.
+
+[![npm version](https://img.shields.io/npm/v/latitude-mcp-server.svg)](https://www.npmjs.com/package/latitude-mcp-server)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
-## Overview
+---
 
-**8 focused tools** for managing prompts on [Latitude.so](https://latitude.so). Push, pull, run, and manage your prompts directly from your AI assistant.
+## Features
+
+- **8 MCP Tools** - Push, pull, run, and manage prompts
+- **52 Documentation Topics** - Comprehensive PromptL syntax guide
+- **Semantic Search** - Find docs by natural language query
+- **File Operations** - Pull prompts to local `.promptl` files
+- **Version Control** - Manage LIVE and draft versions
+- **Zero Config** - Works with `LATITUDE_API_KEY` environment variable
+
+---
 
 ## Quick Start
 
-### 1. Get Your API Key & Project ID
+### Installation
 
-1. Go to [app.latitude.so/settings](https://app.latitude.so/settings)
-2. Create or copy your API key
-3. Get your project ID from the URL when viewing a project
+```bash
+npm install -g latitude-mcp-server
+```
 
-### 2. Configure Your MCP Client
+### Configuration
 
-Add to your MCP configuration:
+Set environment variables:
+
+```bash
+export LATITUDE_API_KEY="your-api-key"
+export LATITUDE_PROJECT_ID="your-project-id"
+```
+
+Get your API key from [Latitude Settings](https://app.latitude.so/settings).
+
+### Usage with MCP Client
+
+Add to your MCP client config (e.g., Claude Desktop):
 
 ```json
 {
@@ -36,171 +58,406 @@ Add to your MCP configuration:
 }
 ```
 
+---
+
+## Available Tools
+
+| Tool | Description |
+|------|-------------|
+| `list_prompts` | List all prompts in LIVE version |
+| `get_prompt` | Get full prompt content by name |
+| `run_prompt` | Execute a prompt with parameters |
+| `push_prompts` | Replace ALL prompts (destructive) |
+| `append_prompts` | Add prompts without removing existing |
+| `pull_prompts` | Download prompts to local files |
+| `replace_prompt` | Replace or create single prompt |
+| `docs` | Get documentation (52 topics) |
+
+---
+
+## Common Workflows
+
+### Pull Prompts to Local Files
+
+```
+pull_prompts({ outputDir: "./prompts" })
+```
+
+Downloads all LIVE prompts to `./prompts/*.promptl` files.
+
+### List Available Prompts
+
+```
+list_prompts()
+```
+
+Returns all prompt names in your project.
+
+### Get Prompt Content
+
+```
+get_prompt({ name: "my-prompt" })
+```
+
+Retrieves full PromptL content including config and messages.
+
+### Run a Prompt
+
+```
+run_prompt({ 
+  name: "my-prompt",
+  parameters: { user_name: "Alice" }
+})
+```
+
+Executes the prompt and returns AI response.
+
+### Update a Prompt
+
+```
+replace_prompt({
+  name: "greeting",
+  content: `---
+provider: OpenAI
+model: gpt-4o
+---
+Hello {{ user_name }}!`
+})
+```
+
+Creates or updates a single prompt in LIVE.
+
+### Get Documentation
+
+```
+docs({ action: "help" })                    # Overview
+docs({ action: "find", query: "variables" }) # Search
+docs({ action: "get", topic: "chains" })     # Specific topic
+```
+
+Access comprehensive PromptL documentation (52 topics).
+
+---
+
+## Documentation Topics (52)
+
+### Core Syntax (12)
+`overview`, `structure`, `variables`, `conditionals`, `loops`, `references`, `tools`, `chains`, `agents`, `techniques`, `agent-patterns`, `mocking`
+
+### Configuration (8)
+`config-basics`, `config-generation`, `config-json-output`, `config-advanced`, `providers-openai`, `providers-anthropic`, `providers-google`, `providers-azure`
+
+### Messages (2)
+`messages-roles`, `messages-multimodal`
+
+### Tools (4)
+`tools-builtin`, `tools-custom`, `tools-schema`, `tools-orchestration`
+
+### Techniques (12)
+`technique-role`, `technique-few-shot`, `technique-cot`, `technique-tot`, `technique-react`, `technique-self-consistency`, `technique-constitutional`, `technique-socratic`, `technique-meta`, `technique-iterative`, `technique-step-back`, `technique-rag`
+
+### Recipes (8)
+`recipe-classification`, `recipe-extraction`, `recipe-generation`, `recipe-chatbot`, `recipe-rag`, `recipe-analysis`, `recipe-moderation`, `recipe-support`
+
+### Guides (6)
+`conversation-history`, `guide-debugging`, `guide-safety`, `guide-performance`, `guide-testing`, `guide-versioning`
+
+---
+
+## Development
+
+### Build
+
+```bash
+npm run build
+```
+
+Compiles TypeScript to `dist/`.
+
+### Test with MCP Inspector
+
+```bash
+npx @modelcontextprotocol/inspector \
+  -e LATITUDE_API_KEY=your-key \
+  -e LATITUDE_PROJECT_ID=your-id \
+  --cli node dist/index.js \
+  --method tools/list
+```
+
+### Local Development
+
+```bash
+# Build and run
+npm run build
+node dist/index.js
+
+# With environment variables
+LATITUDE_API_KEY=xxx LATITUDE_PROJECT_ID=yyy node dist/index.js
+```
+
+---
+
+## Project Structure
+
+```
+latitude-mcp-server/
+├── src/
+│   ├── docs/              # Documentation system (52 topics)
+│   │   ├── types.ts       # Type definitions
+│   │   ├── metadata.ts    # Search metadata
+│   │   ├── help.ts        # Help content
+│   │   ├── core-syntax.ts # Core PromptL syntax (12 topics)
+│   │   ├── phase1.ts      # Tier 1 topics (8)
+│   │   ├── phase2.ts      # Tier 2 topics (13)
+│   │   ├── phase3.ts      # Tier 3 topics (6)
+│   │   ├── techniques.ts  # Prompting techniques (8)
+│   │   ├── recipes.ts     # Use case recipes (5)
+│   │   └── index.ts       # DOCS_MAP + functions
+│   ├── utils/             # Utilities
+│   │   ├── config.util.ts # Environment config
+│   │   └── logger.util.ts # Logging
+│   ├── api.ts             # Latitude API client
+│   ├── docs.ts            # Documentation exports
+│   ├── index.ts           # MCP server entry
+│   ├── server.ts          # MCP server setup
+│   ├── tools.ts           # 8 MCP tools
+│   └── types.ts           # Type definitions
+├── scripts/
+│   └── ensure-executable.js
+├── .gitignore
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+---
+
 ## Environment Variables
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `LATITUDE_API_KEY` | ✅ | Your Latitude API key |
-| `LATITUDE_PROJECT_ID` | ✅ | Target project ID |
-| `LATITUDE_BASE_URL` | ❌ | API base URL (default: gateway.latitude.so) |
-
-## Tools (8 total)
-
-### Prompt Management
-
-| Tool | Description |
-|------|-------------|
-| `list_prompts` | List all prompt names in LIVE |
-| `get_prompt` | Get full prompt content by name |
-| `run_prompt` | Execute a prompt with parameters |
-| `replace_prompt` | Replace a single prompt in LIVE |
-
-### Sync Operations
-
-| Tool | Description |
-|------|-------------|
-| `push_prompts` | Replace ALL LIVE prompts with given files |
-| `append_prompts` | Add prompts to LIVE (optional overwrite) |
-| `pull_prompts` | Download LIVE prompts to `./prompts/*.promptl` |
-
-### Documentation
-
-| Tool | Description |
-|------|-------------|
-| `docs` | Get documentation (help, get topic, find) |
-
-## Tool Examples
-
-### List all prompts
-```json
-{}
-```
-
-### Get a specific prompt
-```json
-{ "name": "my-prompt" }
-```
-
-### Run a prompt
-```json
-{
-  "name": "greeting",
-  "parameters": { "user_name": "Alice" }
-}
-```
-
-### Replace a single prompt
-```json
-{
-  "name": "greeting",
-  "content": "---\nprovider: openai\nmodel: gpt-4o\n---\nHello {{ user_name }}!"
-}
-```
-
-### Push all prompts (replaces LIVE)
-```json
-{
-  "prompts": [
-    { "name": "greeting", "content": "---\nprovider: openai\nmodel: gpt-4o\n---\nHello!" },
-    { "name": "farewell", "content": "---\nprovider: openai\nmodel: gpt-4o\n---\nGoodbye!" }
-  ]
-}
-```
-
-### Append prompts (keeps existing)
-```json
-{
-  "prompts": [
-    { "name": "new-prompt", "content": "..." }
-  ],
-  "overwrite": false
-}
-```
-
-### Pull prompts to local directory
-```json
-{
-  "outputDir": "./prompts"
-}
-```
-
-### Get documentation
-```json
-{ "action": "help" }
-{ "action": "get", "topic": "variables" }
-{ "action": "find", "query": "json output" }
-```
-
-## Documentation Topics
-
-Available topics for `docs({ action: "get", topic: "..." })`:
-
-- `overview` - PromptL basics
-- `structure` - Config + Messages format
-- `variables` - `{{ }}` syntax
-- `conditionals` - if/else logic
-- `loops` - for/each iteration
-- `tools` - Function calling
-- `chains` - Multi-step prompts
-- `agents` - Multi-agent systems
-- `config-json` - JSON Schema output
-- `config-generation` - Temperature, tokens
-- `debugging` - Error troubleshooting
-
-## Automatic Publishing
-
-All write operations (`push_prompts`, `append_prompts`, `replace_prompt`) automatically:
-
-1. Create a draft version
-2. Push changes
-3. Publish to LIVE
-
-No manual versioning required.
-
-## Local Prompts Directory
-
-`pull_prompts` downloads all prompts to `./prompts/` as `.promptl` files:
-
-```
-prompts/
-├── greeting.promptl
-├── support-bot.promptl
-└── data-extractor.promptl
-```
-
-## Development
-
-```bash
-# Install
-npm install
-
-# Build
-npm run build
-
-# Run locally
-LATITUDE_API_KEY=your-key LATITUDE_PROJECT_ID=your-id node dist/index.js
-```
-
-## Migration from v1
-
-v2 simplifies the toolset and requires `LATITUDE_PROJECT_ID`:
-
-| v1 | v2 |
-|----|-----|
-| `latitude_list_projects` | Removed (project ID is required) |
-| `latitude_create_project` | Removed |
-| `latitude_list_versions` | Removed (auto-versioning) |
-| `latitude_create_version` | Removed (automatic) |
-| `latitude_publish_version` | Removed (automatic) |
-| `latitude_list_prompts` | `list_prompts` |
-| `latitude_get_prompt` | `get_prompt` |
-| `latitude_run_prompt` | `run_prompt` |
-| `latitude_push_prompt` | `replace_prompt` |
-| `latitude_push_prompt_from_file` | `push_prompts` / `append_prompts` |
-| `latitude_help` | `docs({ action: "help" })` |
-| `latitude_get_docs` | `docs({ action: "get", topic: "..." })` |
-| `latitude_find_docs` | `docs({ action: "find", query: "..." })` |
+| `LATITUDE_API_KEY` | Yes | Your Latitude API key |
+| `LATITUDE_PROJECT_ID` | Yes | Your project ID |
+| `DEBUG` | No | Enable debug logging |
 
 ---
 
-ISC © [Yiğit Konur](https://github.com/yigitkonur)
+## PromptL Syntax Overview
+
+PromptL is a templating language for AI prompts:
+
+```promptl
+---
+provider: OpenAI
+model: gpt-4o
+temperature: 0.7
+schema:
+  type: object
+  properties:
+    answer:
+      type: string
+  required: [answer]
+---
+<system>
+You are a helpful assistant.
+</system>
+
+<user>
+{{ question }}
+</user>
+```
+
+**Key Features:**
+- YAML config header (provider, model, temperature)
+- Message tags (`<system>`, `<user>`, `<assistant>`)
+- Variables (`{{ name }}`)
+- Conditionals (`{{ if }}`, `{{ else }}`)
+- Loops (`{{ for item in items }}`)
+- Tools (function calling)
+- Chains (multi-step `<step>`)
+- Agents (autonomous `type: agent`)
+
+Use `docs({ action: "get", topic: "overview" })` for complete guide.
+
+---
+
+## API Reference
+
+### list_prompts()
+
+List all prompts in LIVE version.
+
+**Returns:** Array of prompt names
+
+### get_prompt({ name })
+
+Get full prompt content.
+
+**Parameters:**
+- `name` (string) - Prompt name
+
+**Returns:** Prompt content with config and messages
+
+### run_prompt({ name, parameters })
+
+Execute a prompt.
+
+**Parameters:**
+- `name` (string) - Prompt name
+- `parameters` (object) - Input parameters
+
+**Returns:** AI response
+
+### pull_prompts({ outputDir? })
+
+Download prompts to local files.
+
+**Parameters:**
+- `outputDir` (string, optional) - Output directory (default: `./prompts`)
+
+**Returns:** List of created files
+
+### replace_prompt({ name, content })
+
+Replace or create a single prompt.
+
+**Parameters:**
+- `name` (string) - Prompt name
+- `content` (string) - Full PromptL content
+
+**Returns:** Success confirmation
+
+### append_prompts({ prompts, overwrite? })
+
+Add prompts without removing existing ones.
+
+**Parameters:**
+- `prompts` (array) - Array of `{ name, content }`
+- `overwrite` (boolean, optional) - Overwrite existing (default: false)
+
+**Returns:** Success confirmation
+
+### push_prompts({ prompts })
+
+⚠️ **Destructive:** Replaces ALL prompts in LIVE.
+
+**Parameters:**
+- `prompts` (array) - Array of `{ name, content }`
+
+**Returns:** Success confirmation
+
+### docs({ action, topic?, query? })
+
+Get documentation.
+
+**Parameters:**
+- `action` (string) - `"help"`, `"get"`, or `"find"`
+- `topic` (string, optional) - Topic name for `"get"`
+- `query` (string, optional) - Search query for `"find"`
+
+**Returns:** Documentation content
+
+---
+
+## Examples
+
+### Example 1: Pull and Edit Workflow
+
+```javascript
+// 1. Pull all prompts
+pull_prompts({ outputDir: "./my-prompts" })
+
+// 2. Edit locally in ./my-prompts/*.promptl
+
+// 3. Push back
+replace_prompt({
+  name: "my-prompt",
+  content: fs.readFileSync("./my-prompts/my-prompt.promptl", "utf8")
+})
+```
+
+### Example 2: Create New Prompt
+
+```javascript
+replace_prompt({
+  name: "sentiment-analyzer",
+  content: `---
+provider: OpenAI
+model: gpt-4o
+temperature: 0
+schema:
+  type: object
+  properties:
+    sentiment:
+      type: string
+      enum: [positive, negative, neutral]
+  required: [sentiment]
+---
+<system>
+You are a sentiment analysis expert.
+</system>
+
+<user>
+Analyze: {{ text }}
+</user>`
+})
+```
+
+### Example 3: Run with Parameters
+
+```javascript
+const result = await run_prompt({
+  name: "sentiment-analyzer",
+  parameters: { text: "I love this product!" }
+})
+
+// Returns: { sentiment: "positive" }
+```
+
+### Example 4: Search Documentation
+
+```javascript
+// Find topics about JSON
+docs({ action: "find", query: "json output" })
+
+// Get specific topic
+docs({ action: "get", topic: "config-json-output" })
+```
+
+---
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run `npm run build` to verify
+5. Submit a pull request
+
+---
+
+## License
+
+ISC License - see LICENSE file for details
+
+---
+
+## Links
+
+- [Latitude Platform](https://latitude.so)
+- [Latitude Documentation](https://docs.latitude.so)
+- [Model Context Protocol](https://modelcontextprotocol.io)
+- [npm Package](https://www.npmjs.com/package/latitude-mcp-server)
+- [GitHub Repository](https://github.com/yigitkonur/latitude-mcp-server)
+
+---
+
+## Support
+
+- **Issues:** [GitHub Issues](https://github.com/yigitkonur/latitude-mcp-server/issues)
+- **Documentation:** Use `docs({ action: "help" })` tool
+- **Latitude Support:** [Latitude Discord](https://discord.gg/latitude)
+
+---
+
+**Built with ❤️ for the MCP ecosystem**
