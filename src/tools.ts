@@ -5,9 +5,9 @@
  * - list_prompts   : List all prompt names in LIVE
  * - get_prompt     : Get full prompt content by name
  * - run_prompt     : Execute a prompt with parameters
- * - push_prompts   : Replace ALL LIVE prompts (creates branch → merge)
- * - append_prompts : Add prompts to LIVE (creates branch → merge)
- * - pull_prompts   : Download LIVE prompts to local ./prompts/*.promptl
+ * - push_prompts   : FULL SYNC to remote (adds, modifies, DELETES remote prompts not in local)
+ * - pull_prompts   : FULL SYNC from remote (deletes ALL local, downloads ALL from LIVE)
+ * - append_prompts : ADDITIVE only (adds new, optionally updates existing, NEVER deletes)
  * - replace_prompt : Replace/create a single prompt (supports file path)
  * - docs           : Documentation (help, get topic, find query)
  */
@@ -308,11 +308,11 @@ const PushPromptsSchema = z.object({
 			})
 		)
 		.optional()
-		.describe('Prompts to push (replaces ALL existing prompts in LIVE)'),
+		.describe('Prompts to push - FULL SYNC: replaces ALL existing prompts in LIVE'),
 	filePaths: z
 		.array(z.string())
 		.optional()
-		.describe('File paths to .promptl files (alternative to prompts array)'),
+		.describe('File paths to .promptl files - FULL SYNC: deletes remote prompts not in this list'),
 });
 
 async function handlePushPrompts(args: {
@@ -417,16 +417,16 @@ const AppendPromptsSchema = z.object({
 			})
 		)
 		.optional()
-		.describe('Prompts to append'),
+		.describe('Prompts to append - ADDITIVE: keeps existing prompts, adds new ones'),
 	filePaths: z
 		.array(z.string())
 		.optional()
-		.describe('File paths to .promptl files (alternative to prompts array)'),
+		.describe('File paths to .promptl files - ADDITIVE: never deletes existing prompts'),
 	overwrite: z
 		.boolean()
 		.optional()
 		.default(false)
-		.describe('If true, overwrite existing prompts with same name'),
+		.describe('If true, update existing prompts with same name (still no deletions)'),
 });
 
 async function handleAppendPrompts(args: {
@@ -563,7 +563,7 @@ const PullPromptsSchema = z.object({
 	outputDir: z
 		.string()
 		.optional()
-		.describe('Output directory (default: ./prompts)'),
+		.describe('Output directory (default: ./prompts) - FULL SYNC: deletes ALL local .promptl files first'),
 });
 
 async function handlePullPrompts(args: {
