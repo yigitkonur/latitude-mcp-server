@@ -281,6 +281,30 @@ export async function runDocument(
 }
 
 /**
+ * Format timestamp in San Francisco time: "14 Jan 2025 - 13:11"
+ */
+function formatSFTimestamp(): string {
+	const now = new Date();
+	const options: Intl.DateTimeFormatOptions = {
+		timeZone: 'America/Los_Angeles',
+		day: 'numeric',
+		month: 'short',
+		year: 'numeric',
+		hour: '2-digit',
+		minute: '2-digit',
+		hour12: false,
+	};
+	const formatted = now.toLocaleString('en-US', options);
+	// "Jan 14, 2025, 13:11" → "14 Jan 2025 - 13:11"
+	const match = formatted.match(/(\w+)\s+(\d+),\s+(\d+),\s+(\d+:\d+)/);
+	if (match) {
+		return `${match[2]} ${match[1]} ${match[3]} - ${match[4]}`;
+	}
+	// Fallback
+	return now.toISOString().replace(/[:.]/g, '-');
+}
+
+/**
  * Deploy changes to LIVE version
  * Creates a draft → applies changes → publishes to LIVE
  */
@@ -288,8 +312,7 @@ export async function deployToLive(
 	changes: DocumentChange[],
 	versionName?: string
 ): Promise<DeployResult> {
-	const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-	const name = versionName || `deploy-${timestamp}`;
+	const name = versionName || formatSFTimestamp();
 
 	logger.info(`Creating draft: ${name}`);
 	const version = await createVersion(name);

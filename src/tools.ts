@@ -268,7 +268,7 @@ async function handlePushPrompts(args: {
 				content: '',
 				status: 'deleted' as const,
 			}));
-			await deployToLive(deleteChanges, 'push-delete-existing');
+			await deployToLive(deleteChanges);
 		}
 
 		// Step 2: Add each new prompt INDIVIDUALLY to avoid payload size limits
@@ -284,7 +284,7 @@ async function handlePushPrompts(args: {
 						status: 'added',
 					},
 				];
-				await deployToLive(changes, `push-add-${prompt.name}`);
+				await deployToLive(changes);
 				added.push(prompt.name);
 			} catch (error) {
 				const msg = error instanceof Error ? error.message : String(error);
@@ -386,7 +386,7 @@ async function handleAppendPrompts(args: {
 					},
 				];
 
-				await deployToLive(changes, `append-${prompt.name}`);
+				await deployToLive(changes);
 
 				if (exists) {
 					updated.push(prompt.name);
@@ -556,7 +556,7 @@ async function handleReplacePrompt(args: {
 		];
 
 		// Deploy to LIVE (creates branch → pushes → publishes)
-		const { version } = await deployToLive(changes, `replace-${name}`);
+		const { version } = await deployToLive(changes);
 
 		// Force refresh cache after mutation
 		const newNames = await forceRefreshAndGetNames();
