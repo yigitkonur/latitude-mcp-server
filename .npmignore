@@ -16,11 +16,13 @@ jest.config.js
 .gitignore
 .eslintrc
 .eslintrc.js
+eslint.config.mjs
 .eslintignore
 .prettierrc
 .prettierrc.js
 tsconfig.json
 *.tsbuildinfo
+.releaserc.json
 
 # Editor directories
 .idea/
@@ -40,4 +42,9 @@ yarn-error.log*
 
 # Runtime data
 .env
-.env.* 
+.env.*
+
+# Large files not needed at runtime
+openapi.json
+prompts/
+PROMPT_GUIDE.md 

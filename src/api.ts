@@ -341,9 +341,23 @@ export async function listDocuments(
 	versionUuid: string = 'live'
 ): Promise<Document[]> {
 	const projectId = getProjectId();
-	return request<Document[]>(
-		`/projects/${projectId}/versions/${versionUuid}/documents`
-	);
+	try {
+		return await request<Document[]>(
+			`/projects/${projectId}/versions/${versionUuid}/documents`
+		);
+	} catch (error) {
+		// Handle new projects with no LIVE version yet
+		// The API returns 404 "NotFoundError" with "head commit not found" message
+		if (
+			error instanceof LatitudeApiError &&
+			error.statusCode === 404 &&
+			versionUuid === 'live'
+		) {
+			logger.info('No LIVE version exists yet (new project) - treating as empty');
+			return [];
+		}
+		throw error;
+	}
 }
 
 /**
