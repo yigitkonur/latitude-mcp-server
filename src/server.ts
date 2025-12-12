@@ -34,17 +34,10 @@ export async function createServer(): Promise<McpServer> {
 	config.load();
 
 	// Create MCP server
-	server = new McpServer(
-		{
-			name: SERVER_NAME,
-			version: SERVER_VERSION,
-		},
-		{
-			capabilities: {
-				tools: {},
-			},
-		}
-	);
+	server = new McpServer({
+		name: SERVER_NAME,
+		version: SERVER_VERSION,
+	});
 
 	// Register tools
 	await registerTools(server);
@@ -65,11 +58,6 @@ export async function startServer(): Promise<void> {
 		await mcpServer.connect(transport);
 
 		logger.info('Server connected via stdio transport');
-
-		// Keep server running
-		await new Promise(() => {
-			// Server runs indefinitely until process is killed
-		});
 	} catch (error) {
 		logger.error('Failed to start server', error);
 		process.exit(1);

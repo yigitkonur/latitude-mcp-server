@@ -160,12 +160,12 @@ const LOG_FILEPATH = path.join(MCP_DATA_DIR, LOG_FILENAME);
 fs.writeFileSync(
 	LOG_FILEPATH,
 	`# ${CLI_NAME} Log Session\n` +
-		`Session ID: ${SESSION_ID}\n` +
-		`Started: ${new Date().toISOString()}\n` +
-		`Process ID: ${process.pid}\n` +
-		`Working Directory: ${process.cwd()}\n` +
-		`Command: ${process.argv.join(' ')}\n\n` +
-		`## Log Entries\n\n`,
+	`Session ID: ${SESSION_ID}\n` +
+	`Started: ${new Date().toISOString()}\n` +
+	`Process ID: ${process.pid}\n` +
+	`Working Directory: ${process.cwd()}\n` +
+	`Command: ${process.argv.join(' ')}\n\n` +
+	`## Log Entries\n\n`,
 	'utf8',
 );
 
@@ -310,8 +310,9 @@ class Logger {
 			console.error(`Failed to write to log file: ${err}`);
 		}
 
-		// Only output to console if not in test environment or if debug is enabled
-		if (process.env.NODE_ENV !== 'test' || process.env.DEBUG === 'true') {
+		// Only output to console if in test environment or if debug is enabled
+		// This prevents stderr pollution which can break some MCP clients that merge streams
+		if (process.env.NODE_ENV === 'test' || process.env.DEBUG === 'true') {
 			if (process.env.NODE_ENV === 'test') {
 				console[level](logMessage);
 			} else {
