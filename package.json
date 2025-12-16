@@ -1,95 +1,95 @@
 {
-	"name": "latitude-mcp-server",
-	"version": "4.0.2",
-	"description": "Simplified MCP server for Latitude.so prompt management - 8 focused tools for push, pull, run, and manage prompts",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"type": "commonjs",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/yigitkonur/latitude-mcp-server.git"
-	},
-	"bin": {
-		"latitude-mcp": "./dist/index.js",
-		"latitude-mcp-server": "./dist/index.js"
-	},
-	"scripts": {
-		"build": "tsc",
-		"prepare": "npm run build && node scripts/ensure-executable.js",
-		"postinstall": "node scripts/ensure-executable.js",
-		"clean": "rm -rf dist coverage",
-		"test": "jest",
-		"test:coverage": "jest --coverage",
-		"lint": "eslint src --ext .ts --config eslint.config.mjs",
-		"update:deps": "npx npm-check-updates -u && npm install --legacy-peer-deps",
-		"format": "prettier --write 'src/**/*.ts' 'scripts/**/*.js'",
-		"cli": "npm run build && node dist/index.js",
-		"mcp:stdio": "npm run build && TRANSPORT_MODE=stdio node dist/index.js",
-		"mcp:http": "npm run build && TRANSPORT_MODE=http node dist/index.js",
-		"mcp:inspect": "npm run build && (TRANSPORT_MODE=http node dist/index.js &) && sleep 2 && npx @modelcontextprotocol/inspector http://localhost:3000/mcp",
-		"dev:stdio": "npm run build && npx @modelcontextprotocol/inspector -e TRANSPORT_MODE=stdio -e DEBUG=true node dist/index.js",
-		"dev:http": "npm run build && DEBUG=true TRANSPORT_MODE=http node dist/index.js"
-	},
-	"keywords": [
-		"mcp",
-		"model-context-protocol",
-		"latitude",
-		"prompt-management",
-		"ai",
-		"llm",
-		"typescript",
-		"claude",
-		"anthropic",
-		"prompts",
-		"version-control",
-		"mcp-server"
-	],
-	"author": "Andi Ashari",
-	"license": "ISC",
-	"engines": {
-		"node": ">=18.0.0"
-	},
-	"devDependencies": {
-		"@eslint/js": "^9.39.1",
-		"@jest/globals": "^30.2.0",
-		"@semantic-release/changelog": "^6.0.3",
-		"@semantic-release/exec": "^7.1.0",
-		"@semantic-release/git": "^10.0.1",
-		"@semantic-release/github": "^12.0.2",
-		"@semantic-release/npm": "^13.1.2",
-		"@types/jest": "^30.0.0",
-		"@types/node": "^24.10.1",
-		"@typescript-eslint/eslint-plugin": "^8.48.0",
-		"@typescript-eslint/parser": "^8.48.0",
-		"eslint": "^9.39.1",
-		"eslint-config-prettier": "^10.1.8",
-		"eslint-plugin-prettier": "^5.5.4",
-		"jest": "^30.2.0",
-		"prettier": "^3.7.3",
-		"semantic-release": "^25.0.2",
-		"ts-jest": "^29.4.5",
-		"typescript": "^5.9.3",
-		"typescript-eslint": "^8.48.0"
-	},
-	"dependencies": {
-		"@modelcontextprotocol/sdk": "^1.23.0",
-		"dotenv": "^17.2.3",
-		"promptl-ai": "^0.9.4",
-		"zod": "^4.1.13"
-	},
-	"publishConfig": {
-		"registry": "https://registry.npmjs.org/",
-		"access": "public"
-	},
-	"jest": {
-		"preset": "ts-jest",
-		"testEnvironment": "node",
-		"testMatch": [
-			"**/src/**/*.test.ts"
-		],
-		"collectCoverageFrom": [
-			"src/**/*.ts",
-			"!src/**/*.test.ts"
-		]
-	}
+  "name": "latitude-mcp-server",
+  "version": "4.0.3",
+  "description": "Simplified MCP server for Latitude.so prompt management - 8 focused tools for push, pull, run, and manage prompts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yigitkonur/latitude-mcp-server.git"
+  },
+  "bin": {
+    "latitude-mcp": "./dist/index.js",
+    "latitude-mcp-server": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build && node scripts/ensure-executable.js",
+    "postinstall": "node scripts/ensure-executable.js",
+    "clean": "rm -rf dist coverage",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src --ext .ts --config eslint.config.mjs",
+    "update:deps": "npx npm-check-updates -u && npm install --legacy-peer-deps",
+    "format": "prettier --write 'src/**/*.ts' 'scripts/**/*.js'",
+    "cli": "npm run build && node dist/index.js",
+    "mcp:stdio": "npm run build && TRANSPORT_MODE=stdio node dist/index.js",
+    "mcp:http": "npm run build && TRANSPORT_MODE=http node dist/index.js",
+    "mcp:inspect": "npm run build && (TRANSPORT_MODE=http node dist/index.js &) && sleep 2 && npx @modelcontextprotocol/inspector http://localhost:3000/mcp",
+    "dev:stdio": "npm run build && npx @modelcontextprotocol/inspector -e TRANSPORT_MODE=stdio -e DEBUG=true node dist/index.js",
+    "dev:http": "npm run build && DEBUG=true TRANSPORT_MODE=http node dist/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "latitude",
+    "prompt-management",
+    "ai",
+    "llm",
+    "typescript",
+    "claude",
+    "anthropic",
+    "prompts",
+    "version-control",
+    "mcp-server"
+  ],
+  "author": "Andi Ashari",
+  "license": "ISC",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@jest/globals": "^30.2.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/exec": "^7.1.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^12.0.2",
+    "@semantic-release/npm": "^13.1.2",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.10.1",
+    "@typescript-eslint/eslint-plugin": "^8.48.0",
+    "@typescript-eslint/parser": "^8.48.0",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "jest": "^30.2.0",
+    "prettier": "^3.7.3",
+    "semantic-release": "^25.0.2",
+    "ts-jest": "^29.4.5",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.48.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.23.0",
+    "dotenv": "^17.2.3",
+    "promptl-ai": "^0.9.4",
+    "zod": "^4.1.13"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/src/**/*.test.ts"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/**/*.test.ts"
+    ]
+  }
 }
